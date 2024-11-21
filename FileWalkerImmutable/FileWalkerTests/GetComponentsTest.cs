@@ -8,22 +8,34 @@ public class GetComponentsTest
 {
     private FileSystemFacade _fileSystem;
     private IComponent _root;
+    
     private IComponent _folder;
-    private IComponent _file2;
-    private IComponent _file1;
+    private IComponent _emptyFolder;
+    private IComponent _subFolder;
+
+    private IComponent _rootFile;
+    private IComponent _file;
+    private IComponent _subFile;
 
     [TestInitialize]
     public void Initialize()
     {
+        // FileSystem & Root
         _fileSystem = new FileSystemFacade();
         _root = _fileSystem.CreateFolder("root");
-        _file1 = _fileSystem.CreateFile("file1", 1, "1");
-        _folder = _fileSystem.CreateFolder("folder1");
-        _file2 = _fileSystem.CreateFile("file2", 2, "12");
+        // Folders
+        _folder = _fileSystem.CreateFolder("folder");
+        _emptyFolder = _fileSystem.CreateFolder("emptyFolder");
+        _subFolder = _fileSystem.CreateFolder("subFolder");
+        // Files
+        _rootFile = _fileSystem.CreateFile("rootFile", 1, "1");
+        _file = _fileSystem.CreateFile("file", 2, "12");
+        _subFile = _fileSystem.CreateFile("subFile", 3, "123");
         
-        _fileSystem.AddChildren(_root, _folder);
-        _fileSystem.AddChildren(_root, _file1);
-        _fileSystem.AddChildren(_folder, _file2);
+        // Arrange structure
+        _fileSystem.AddChildren(_root, _folder, _emptyFolder, _rootFile);
+        _fileSystem.AddChildren(_folder, _subFolder, _file);
+        _fileSystem.AddChildren(_subFolder, _subFile);
     }
 
     [TestMethod]
@@ -34,51 +46,61 @@ public class GetComponentsTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
-    public void TestGetPathWithInvalidOrder()
+    // Method throws. It shouldn't in my opinion. The facade should deal with the exception and return null I guess.
+    // Right now it throws NullReferenceException
+    public void TestGetComponentWithInvalidOrder()
     {
-        _fileSystem.GetComponentByPath(_root, "file2", "folder");
-    }
-
-    [TestMethod]
-    public void TestGetFileInRoot()
-    {
-        var componentId = _fileSystem.GetComponentByPath(_root, "file1").ID;
-        Assert.AreEqual(_file1.ID, componentId);
-    }
-    
-    [TestMethod]
-    public void TestGetFileFromNestedFolder()
-    {
-        var componentId = _fileSystem.GetComponentByPath(_root, "folder1", "file2").ID;
-        Assert.AreEqual(_file2.ID, componentId);
-    }
-
-    [TestMethod]
-    public void TestGetInvalidFileFromNestedFolder()
-    {
-        var component = _fileSystem.GetComponentByPath(_root, "folder1", "not_a_file");
+        var component = _fileSystem.GetComponentByPath(_root, "file2", "folder");
         Assert.IsNull(component);
     }
 
     [TestMethod]
-    public void TestGetFolderInRoot()
+    public void TestGetComponentInRoot()
     {
-        var componentId = _fileSystem.GetComponentByPath(_root, "folder1").ID;
-        Assert.AreEqual(_folder.ID, componentId);
+        var componentId = _fileSystem.GetComponentByPath(_root, "rootFile").ID;
+        Assert.AreEqual(_rootFile.ID, componentId);
+    }
+    
+    [TestMethod]
+    public void TestGetComponentFromNestedFolder()
+    {
+        var componentId = _fileSystem.GetComponentByPath(_root, "folder", "subFolder", "subFile").ID;
+        Assert.AreEqual(_subFile.ID, componentId);
     }
 
     [TestMethod]
-    public void TestGetInvalidFolderInRoot()
+    public void TestGetInvalidComponentFromNestedFolder()
+    {
+        var component = _fileSystem.GetComponentByPath(_root, "emptyFolder", "file");
+        Assert.IsNull(component);
+    }
+
+    [TestMethod]
+    public void TestGetInvalidComponentInRoot()
     {
         var component = _fileSystem.GetComponentByPath(_root, "not_a_folder");
         Assert.IsNull(component);
     }
 
     [TestMethod]
-    [ExpectedException(typeof(NullReferenceException))]
+    // Method throws. It shouldn't in my opinion. The facade should deal with the exception and return null I guess.
+    // Right now it throws NullReferenceException
+
     public void TestGetFileInNonExistentFolder()
     {
         _fileSystem.GetComponentByPath(_root, "not_a_folder", "file1");
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(Exception))] //NameAlreadyExistsException ?
+    // This should not be permitted. To create add a file as a children to a folder that already contains a file with that name
+    public void TestGetComponentWithSameName()
+    {
+        Console.WriteLine(_rootFile.ID);
+        var componentA = _fileSystem.CreateFile(_rootFile.Name, 5, "12345");
+        _fileSystem.AddChildren(_root, componentA);
+        var componentB = _fileSystem.GetComponentByPath(_root, _rootFile.Name);
+        Assert.AreEqual(componentA.ID, componentB.ID);
+    }
+    
 }
