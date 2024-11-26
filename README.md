@@ -13,8 +13,11 @@
         - ["Root", "non-existant-folder", "file"] -> Erreur (NullReferenceException)
         - ["Root", "existant-folder", "non-existant-file"] -> Pas d'erreur, retourne seulement un component null.
 
+- Le pattern observer semble boff en esti. J'ai de la misere a le catcher.
 
-### 
+- Dans FileSystemFacade.cs, il y a 2 trucs
+    - public string notification ?? sert a rien
+    - Create methods (Folder & File), y'a une instance creer dans le vide.
 
 
 #### Questions prof
