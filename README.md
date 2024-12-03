@@ -18,6 +18,8 @@
 - Dans FileSystemFacade.cs, il y a 2 trucs
     - public string notification ?? sert a rien
     - Create methods (Folder & File), y'a une instance creer dans le vide.
+ 
+- Tu peux pas detach un observer du publisher. La fonction "Detach" est pas utilisee.
 
 
 #### Questions prof
