@@ -21,6 +21,10 @@
  
 - Tu peux pas detach un observer du publisher. La fonction "Detach" est pas utilisee.
 
+- FileSystem -> Remove() -> ligne 78 & 79 : Les 2 variables servent a rien (n & j)
+
+- FileSystem -> beaucoup de functions peuvent etre private
+
 
 #### Questions prof
 
