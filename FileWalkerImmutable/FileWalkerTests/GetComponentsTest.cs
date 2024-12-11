@@ -8,7 +8,7 @@ public class GetComponentsTest
 {
     private FileSystemFacade _fileSystem;
     private IComponent _root;
-    
+
     private IComponent _folder;
     private IComponent _emptyFolder;
     private IComponent _subFolder;
@@ -31,7 +31,7 @@ public class GetComponentsTest
         _rootFile = _fileSystem.CreateFile("rootFile", 1, "1");
         _file = _fileSystem.CreateFile("file", 2, "12");
         _subFile = _fileSystem.CreateFile("subFile", 3, "123");
-        
+
         // Arrange structure
         _fileSystem.AddChildren(_root, _folder, _emptyFolder, _rootFile);
         _fileSystem.AddChildren(_folder, _subFolder, _file);
@@ -60,7 +60,7 @@ public class GetComponentsTest
         var componentId = _fileSystem.GetComponentByPath(_root, "rootFile").ID;
         Assert.AreEqual(_rootFile.ID, componentId);
     }
-    
+
     [TestMethod]
     public void TestGetComponentFromNestedFolder()
     {
@@ -85,7 +85,6 @@ public class GetComponentsTest
     [TestMethod]
     // Method throws. It shouldn't in my opinion. The facade should deal with the exception and return null I guess.
     // Right now it throws NullReferenceException
-
     public void TestGetFileInNonExistentFolder()
     {
         _fileSystem.GetComponentByPath(_root, "not_a_folder", "file1");
@@ -93,14 +92,11 @@ public class GetComponentsTest
 
     [TestMethod]
     [ExpectedException(typeof(Exception))] //NameAlreadyExistsException ?
-    // This should not be permitted. To create add a file as a children to a folder that already contains a file with that name
-    public void TestGetComponentWithSameName()
+    // This should not be permitted.
+    // The creation of a new file with the same name should throw a NameAlreadyExistsException IMO
+    public void TestCreateComponentWithSameName()
     {
-        Console.WriteLine(_rootFile.ID);
         var componentA = _fileSystem.CreateFile(_rootFile.Name, 5, "12345");
         _fileSystem.AddChildren(_root, componentA);
-        var componentB = _fileSystem.GetComponentByPath(_root, _rootFile.Name);
-        Assert.AreEqual(componentA.ID, componentB.ID);
     }
-    
 }

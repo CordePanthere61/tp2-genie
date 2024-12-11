@@ -96,7 +96,7 @@ public class RenameComponentsTest
 
     [TestMethod]
     [ExpectedException(typeof(Exception))] // NameAlreadyExistsException ?
-    // This should not be permitted. To create a file 
+    // This should not be permitted.
     public void TestRenameComponentToExistingName()
     {
         var folder = _fileSystem.GetComponentByPath(_root, "folder");

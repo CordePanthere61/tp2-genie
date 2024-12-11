@@ -31,7 +31,7 @@ public class NotificationsTest
     }
 
 
-    // It should not fail. If observer already exists, it should be added twice.
+    // It should not fail. If observer already exists, it should be overridden.
     [TestMethod]
     public void TestComponentShouldNotBeAddedTwice()
     {
